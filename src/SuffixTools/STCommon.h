@@ -94,9 +94,10 @@ struct SAElem
         uint64_t m_val;
 
         // Masks
+        static const uint64_t ZERO = 0;
         static const uint8_t ID_BITS = 36; // Allows up to 68 billion IDs
         static const uint8_t POS_BITS = 64 - ID_BITS;
-        static const uint64_t HIGH_MASK = ~0llu << POS_BITS;
+        static const uint64_t HIGH_MASK = ~ZERO << POS_BITS;
         static const uint64_t LOW_MASK = ~HIGH_MASK;
 };
 

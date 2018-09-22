@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
-AC_INIT(sga, 0.10.15, js18@sanger.ac.uk)
+AC_INIT(sga, 0.10.13, js18@sanger.ac.uk)
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([SGA/sga.cpp])
 AC_CONFIG_HEADER([config.h])
@@ -92,10 +92,13 @@ fi
 
 # Set compiler flags.
 AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra $fail_on_warning -Wno-unknown-pragmas")
-AC_SUBST(CXXFLAGS, "-std=c++98 -O3")
-AC_SUBST(CFLAGS, "-std=gnu99 -O3")
+AC_SUBST(CXXFLAGS, "-O3 -fPIC")
+AC_SUBST(CFLAGS, "-O3 -fPIC")
 AC_SUBST(CPPFLAGS, "$CPPFLAGS $openmp_cppflags $sparsehash_include $bamtools_include")
 AC_SUBST(LDFLAGS, "$openmp_cppflags $external_malloc_ldflags $bamtools_ldflags $LDFLAGS")
+
+AC_CHECK_HEADER([tbb/tbb.h],,[AC_MSG_ERROR([tbb non found])])
+AC_CHECK_LIB([tbb], [main],,[AC_MSG_ERROR([tbb non found])])
 
 # We always need to specify to link in bamtools
 AC_SUBST(LIBS, "$LIBS -lbamtools")
@@ -139,6 +142,8 @@ AC_CONFIG_FILES([Makefile
 		SuffixTools/Makefile
         GraphDiff/Makefile
         Scaffold/Makefile
+		FSG/Makefile
+		SOF/Makefile
 		SGA/Makefile])
 
 AC_OUTPUT

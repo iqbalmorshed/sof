@@ -1,0 +1,60 @@
+/*
+ * CurrentRead.h
+ *
+ *  Created on: Jun 18, 2018
+ *      Author: iqbal
+ */
+
+#ifndef SRC_SOF_CURRENTREAD_H_
+#define SRC_SOF_CURRENTREAD_H_
+
+#include <vector>
+
+#include "OverlapContainer.h"
+
+namespace sof {
+
+using OverlapInfoVector = std::vector<OverlapInfo>;
+using IntervalVector = std::vector<TerminalInterval>;
+using IntervalList = std::list<TerminalInterval>;
+
+struct PoppedInterval {
+	IntervalVector intervalVector;
+	readLen_t index;
+};
+
+class CurrentRead {
+
+public:
+	CurrentRead(numReads_t virtualID,
+				const OverlapInfoVector& readOverlaps,
+				readLen_t readLength,
+				readLen_t minOverlap);
+
+	void split_interval(readLen_t index,
+						TerminalInterval terminalInterval);
+
+	//bool is_empty(readLen_t index) const;
+	bool is_poppable_interval();
+
+	PoppedInterval pop_intervals_from_lowest_index() const;
+	void get_all_irreducible_intervals(OverlapInfoVector& overlapInfoVector) const;
+
+	void print_intervals();
+
+	const readLen_t m_maxIndex;
+	const numReads_t m_virtualID;
+
+
+private:
+	//std::vector<IntervalVector> m_indexedReadOverlaps;
+	std::vector<IntervalList> m_indexedReadOverlaps;
+	std::vector<int> m_nElementsInIndex;
+	readLen_t m_popIndex = 0;
+	std::vector<readLen_t> m_popIndexVector;
+
+};
+
+} /* namespace sof */
+
+#endif /* SRC_SOF_CURRENTREAD_H_ */

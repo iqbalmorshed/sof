@@ -52,6 +52,7 @@ class SampledSuffixArray
         void writeSSA(std::string filename);
         void readSSA(std::string filename);
         void readSAI(std::string filename);
+        size_t getLexoIndexSize() const {return m_saLexoIndex.size();}
 
     private:
 

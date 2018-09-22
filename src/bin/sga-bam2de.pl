@@ -9,7 +9,7 @@ my $minLength = 200;
 my $prefix = "";
 my $numThreads = 1;
 my $mind = -99; # minimum gap size to pass to abyss
-my $mina = 30; # minimum alignment length to pass to abyss
+my $mina = 100; # minimum alignment length to pass to abyss
 
 # Filter the abyss distance est histogram to remove insert sizes
 # with fewer than hist_min data points
@@ -62,7 +62,7 @@ runCmd($cmd);
 runCmd("awk \'\$2 >= $hist_min\' $prefix.tmp.hist > $prefix.hist");
 
 # sort 
-$cmd = "samtools sort -\@$numThreads -o $prefix.diffcontigs.sorted.bam $prefix.diffcontigs.bam";
+$cmd = "samtools sort $prefix.diffcontigs.bam $prefix.diffcontigs.sorted";
 runCmd($cmd);
 
 # distance est

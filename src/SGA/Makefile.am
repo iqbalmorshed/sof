@@ -1,5 +1,7 @@
 bin_PROGRAMS = sga
 
+sga_CXXFLAGS = -std=c++11
+
 sga_CPPFLAGS = \
 	-I$(top_srcdir)/Util \
 	-I$(top_srcdir)/Bigraph \
@@ -10,7 +12,10 @@ sga_CPPFLAGS = \
 	-I$(top_srcdir)/SQG \
 	-I$(top_srcdir)/Scaffold \
 	-I$(top_srcdir)/GraphDiff \
-	-I$(top_srcdir)/Thirdparty
+	-I$(top_srcdir)/Thirdparty \
+	-I$(top_srcdir)/FSG \
+	-I$(top_srcdir)/SOF
+	
 
 sga_LDADD = \
 	$(top_builddir)/Scaffold/libscaffold.a \
@@ -22,7 +27,11 @@ sga_LDADD = \
 	$(top_builddir)/Bigraph/libbigraph.a \
 	$(top_builddir)/Util/libutil.a \
 	$(top_builddir)/SQG/libsqg.a \
-	$(top_builddir)/Thirdparty/libthirdparty.a
+	$(top_builddir)/Thirdparty/libthirdparty.a \
+	$(top_builddir)/FSG/libfsg.a \
+	$(top_builddir)/SOF/libsof.a
+
+
 
 sga_LDFLAGS = -pthread
 
