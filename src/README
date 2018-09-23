@@ -117,9 +117,7 @@ This program is threaded. The output file is READS.asqg.gz by default.
 
 * sga sof -m N READS
 
-Construct string graph using SOF algorithm. SOF is faster than SGA's default string graph construction algorithm implemeted
-in "overlap" subprogram. Current implementation of SOF does not allow multi-threading. The -m parameter specifies the minimum 
-overlap length (default: 45). The output file is READS.asqg by default.
+Construct string graph using SOF algorithm. SOF is faster than SGA's default string graph construction algorithm implemeted in "overlap" subprogram. Current implementation of SOF does not allow multi-threading. The -m parameter specifies the minimum overlap length (default: 45). The output file is READS.asqg by default.
 
 * sga assemble READS.asqg.gz
 
