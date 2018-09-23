@@ -8,9 +8,9 @@ find overlaps between sequence reads. The core algorithms are described in this 
 
 http://bioinformatics.oxfordjournals.org/cgi/content/abstract/26/12/i367
 
-This version also includes a faster algorithm for the core task of computing
-the string graph, called FSG, designed by Paola Bonizzoni, Gianluca Della
-Vedova, Yuri Pirola, Marco Previtali, and Raffaella Rizzi.
+This repository contains SOF, a string graph construction algorithm designed by 
+S.M. Iqbal Morshed and Shibu Yooseph. SOF is included as subprogram "sof" for constructing
+string graph. "sof" subprogram is faster but more memroy-intensive than "overlap" subprogram.  
 
 -------------
 Compiling SGA
@@ -117,7 +117,9 @@ This program is threaded. The output file is READS.asqg.gz by default.
 
 * sga sof -m N READS
 
-Construct string graph using SOF algorithm. It is faster than overlap subprogram, but takes more memory. The -m parameter specifies the minimum overlap length (default: 45). The output file is READS.asqg by default.
+Construct string graph using SOF algorithm. SOF is faster than SGA's default string graph construction algorithm implemeted
+in "overlap" subprogram. Current implementation of SOF does not allow multi-threading. The -m parameter specifies the minimum 
+overlap length (default: 45). The output file is READS.asqg by default.
 
 * sga assemble READS.asqg.gz
 
@@ -172,9 +174,6 @@ property, including patents, are granted to you under this license.
 Credits
 
 The original SGA suite has been written by Jared Simpson.
-All the algorithms but FSG were developed by Jared Simpson and Richard Durbin.  
+All the algorithms except SOF were developed by Jared Simpson and Richard Durbin.  
 
-FSG has been designed by Paola Bonizzoni, Gianluca Della Vedova, Yuri Pirola,
-Marco Previtali and Raffaella Rizzi, and has been implemented by Yuri Pirola and
-Marco Previtali.
-Please address to them any question related to FSG.
+SOF is written by S.M. Iqbal Morshed. Please address to them any question related to SOF.
