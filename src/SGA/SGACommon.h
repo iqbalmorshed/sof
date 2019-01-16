@@ -26,6 +26,8 @@
 #define RSAI_EXT ".rsai"
 #define SSA_EXT ".ssa"
 #define POPIDX_EXT ".popidx"
+#define BWTRC_EXT ".bwtrc"
+#define SAIRC_EXT ".sairc"
 
 // Default values
 #define DEFAULT_MIN_OVERLAP 45

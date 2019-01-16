@@ -26,7 +26,7 @@ public:
 	EdgeContainer();
 
 	EdgeContainer(const numReads_t& numReads){
-		m_edgeInfoMap = std::vector<EdgeMap>(numReads);
+		m_edgeInfoMap = std::vector<EdgeMap>(numReads/2);
 	}
 
 	void set_edge(numReads_t sourceVertexID,

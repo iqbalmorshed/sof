@@ -37,6 +37,7 @@ sga_LDFLAGS = -pthread
 
 sga_SOURCES = sga.cpp \
               index.cpp index.h \
+              indexSOF.cpp indexSOF.h \
               overlap.cpp overlap.h \
               assemble.cpp assemble.h \
               correct.cpp correct.h \

@@ -26,6 +26,10 @@ public:
 	virtual CurrentRead get_read(numReads_t virtualReadID) override;
 	virtual void write_edges(CurrentRead& currentRead) override;
 
+	inline bool isBothReverseComplement(bool isSourceRevComp, numReads_t virtualID){
+		return isSourceRevComp && virtualID%2;
+	}
+
 };
 
 } /* namespace sof */

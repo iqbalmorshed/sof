@@ -25,9 +25,9 @@ struct InputData{
 public:
 	std::string readsFileName;
 	std::string bwtFileName;
-	std::string revBwtFileName;
+	//std::string revBwtFileName;
 	std::string lexIndexFileName;
-	std::string revLexIndexFileName;
+	//std::string revLexIndexFileName;
 	readLen_t minOverlap;
 
 	//BWTType bwtType = BWT_BY_WAVELET;

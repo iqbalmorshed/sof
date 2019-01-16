@@ -44,6 +44,7 @@ void OperationOnBE::write_edges(CurrentRead& currentRead) {
 	if (irreducibleIntervals.size())
 		m_readsInfo.set_isVertex(edgeInfo.sourceVertexID, true);
 
+	bool isSourceRevComp = edgeInfo.sourceVertexID % 2;
 	for (auto &intervalElement : irreducibleIntervals) {
 
 		for (auto i = intervalElement.terminalInterval.lower;
@@ -53,7 +54,8 @@ void OperationOnBE::write_edges(CurrentRead& currentRead) {
 
 			//prevent invalid reads and self-edges
 			if (m_readsInfo.get_isValid(virtualID)
-					&& virtualID != edgeInfo.sourceVertexID) {
+					&& !isBothReverseComplement(isSourceRevComp, virtualID)
+					&& virtualID/2 != edgeInfo.sourceVertexID/2) {
 
 				m_readsInfo.set_isVertex(virtualID, true);
 				edgeInfo.destinationVertexIDs.push_back(virtualID);

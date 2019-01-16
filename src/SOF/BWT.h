@@ -18,11 +18,7 @@ struct BWTInterval{
 	numBases_t lower;
 	numBases_t upper;
 };
-struct TerminalInterval{
-	//indexing starts from 0.
-	numReads_t lower;
-	numReads_t upper;
-};
+
 class BWT {
 public:
 	BWT(const std::string& bwtFileName);

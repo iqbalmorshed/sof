@@ -127,10 +127,10 @@ int sofMain(int argc, char** argv){
 	sof::InputData inputData;
 
 	inputData.readsFileName = opt::readsFile;
-	inputData.bwtFileName = indexPrefix + BWT_EXT;
-	inputData.revBwtFileName = indexPrefix + RBWT_EXT;
-	inputData.lexIndexFileName = indexPrefix + SAI_EXT;
-	inputData.revLexIndexFileName = indexPrefix + RSAI_EXT;
+	inputData.bwtFileName = indexPrefix + BWTRC_EXT;
+	//inputData.revBwtFileName = indexPrefix + RBWT_EXT;
+	inputData.lexIndexFileName = indexPrefix + SAIRC_EXT;
+	//inputData.revLexIndexFileName = indexPrefix + RSAI_EXT;
 	inputData.minOverlap = opt::minOverlap;
 
 	std::cout<<"input Data Collected.\n";

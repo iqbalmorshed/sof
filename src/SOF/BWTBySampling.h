@@ -10,6 +10,7 @@
 
 #include "BWT.h"
 #include "RLBWT.h"
+#include "SOFCommon.h"
 
 namespace sof {
 

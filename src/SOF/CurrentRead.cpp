@@ -15,6 +15,7 @@ CurrentRead::CurrentRead(	numReads_t virtualID,
 							readLen_t minOverlap)
 		: 	m_virtualID(virtualID),
 			m_maxIndex(readLength - minOverlap) {
+	//std::cout<<"current read construction: started\n";
 
 	//m_indexedReadOverlaps = std::vector<IntervalVector>(m_maxIndex+1);
 	m_indexedReadOverlaps = std::vector<IntervalList>(m_maxIndex + 1);
@@ -30,7 +31,7 @@ CurrentRead::CurrentRead(	numReads_t virtualID,
 			m_popIndexVector.push_back(overlapInfo.readIndex);
 		}
 	}
-
+	//std::cout<<"current read constructor: ended\n";
 }
 
 bool CurrentRead::is_poppable_interval() {

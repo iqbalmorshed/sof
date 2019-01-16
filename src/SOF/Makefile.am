@@ -20,12 +20,10 @@ libsof_a_SOURCES = \
 	BWT.h BWT.cpp \
 	BWTBySampling.h BWTBySampling.cpp \
 	CurrentRead.h CurrentRead.cpp \
-	EdgeContianer.h EdgeContainer.cpp \
+	EdgeContainer.h EdgeContainer.cpp \
 	FileWriter.h FileWriter.cpp \
-	GraphFromCombinedEdges.h GraphFromCombinedEdges.cpp \
 	LexicographicIndex.h LexicographicIndex.cpp \
 	OperationOnBE.h OperationOnBE.cpp \
-	OperationOnBBandEE.h OperationOnBBandEE.cpp \
 	OverlapOperations.h OverlapOperations.cpp \
 	OverlapContainer.h OverlapContainer.cpp	\
 	ReadsInfo.h ReadsInfo.cpp \

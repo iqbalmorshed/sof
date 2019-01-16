@@ -12,6 +12,7 @@
 #define NDEBUG
 #include <stdint.h>
 #include <assert.h>
+#include <vector>
 
 enum EdgeType{
 	BE_EDGE = 0,
@@ -23,6 +24,25 @@ using numReads_t =  int; //int64_t; // TODO
 using numBases_t = int_fast64_t;
 using readLen_t = int16_t;
 using isDone_t = bool;
+
+namespace sof {
+
+struct TerminalInterval{
+	//indexing starts from 0.
+	numReads_t lower;
+	numReads_t upper;
+};
+
+struct OverlapInfo {
+	TerminalInterval terminalInterval;
+	readLen_t readIndex;
+};
+
+using OverlapInfoVector = std::vector<OverlapInfo>;
+} /* namespace sof */
+
+
+
 
 #define DEFAULT_REPEAT_PRESENCE false
 #define DEFAULT_SUBSTRING_PRESENCE false

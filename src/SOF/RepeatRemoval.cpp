@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include "Timer.h"
 #include "EdgeContainer.h"
@@ -23,8 +24,8 @@ RepeatRemoval::RepeatRemoval(numReads_t numReads) :
 
 	Timer t("Repeat removal from temp files");
 
-	remove_repeat("temp_edge_file.bb");
-	remove_repeat("temp_edge_file.ee");
+	remove_repeat("temp_edge_file.be");
+	//remove_repeat("temp_edge_file.ee");
 
 }
 
@@ -49,9 +50,20 @@ void RepeatRemoval::remove_repeat(const std::string& tempFileName) {
 
 		bool isSourceVertexPrinted = false;
 
+		bool isSourceRC = sourceVertex%2;
 		while (ss >> destinationVertex >> overlapLength) {
+			bool isDestinationRC = destinationVertex%2;
 
-			if(!edgeContainer.is_present(sourceVertex, destinationVertex, overlapLength)){
+			if( !isSourceRC && !isDestinationRC){
+
+				if(!isSourceVertexPrinted){
+					tempFileWriter << sourceVertex <<" ";
+					isSourceVertexPrinted = true;
+				}
+				tempFileWriter << destinationVertex <<" "<<overlapLength<<" ";
+
+			}
+			else if(!edgeContainer.is_present(sourceVertex/2, destinationVertex/2, overlapLength)){
 
 				if(!isSourceVertexPrinted){
 					tempFileWriter << sourceVertex <<" ";
@@ -59,8 +71,9 @@ void RepeatRemoval::remove_repeat(const std::string& tempFileName) {
 				}
 
 				tempFileWriter << destinationVertex <<" "<<overlapLength<<" ";
+				//std::cout<<sourceVertex<<" "<< destinationVertex <<" "<<overlapLength<<"\n";
 
-				edgeContainer.set_edge(sourceVertex, destinationVertex, overlapLength);
+				edgeContainer.set_edge(sourceVertex/2, destinationVertex/2, overlapLength);
 
 			}
 

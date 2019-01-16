@@ -8,7 +8,8 @@
 //
 #include <string>
 #include <iostream>
-#include "index.h" 
+#include "index.h"
+#include "indexSOF.h"
 #include "overlap.h"
 #include "overlap-long.h"
 #include "assemble.h"
@@ -115,6 +116,8 @@ int main(int argc, char** argv)
             preprocessMain(argc - 1, argv + 1);
         else if(command == "index")
             indexMain(argc - 1, argv + 1);
+        else if(command == "indexSOF")
+            indexSOFMain(argc - 1, argv + 1);
         else if(command == "merge")
             mergeMain(argc - 1, argv + 1);
         else if(command == "filter")

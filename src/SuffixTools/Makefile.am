@@ -34,6 +34,7 @@ libsuffixtools_a_SOURCES = STCommon.cpp STCommon.h \
                            SampledSuffixArray.h SampledSuffixArray.cpp \
                            BWTCABauerCoxRosone.h BWTCABauerCoxRosone.cpp \
                            BWTCARopebwt.h BWTCARopebwt.cpp \
+                           BWTCARopebwtRC.h BWTCARopebwtRC.cpp \
                            PopulationIndex.h PopulationIndex.cpp \
                            BWT.h \
                            BWTInterval.h \

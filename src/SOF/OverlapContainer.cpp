@@ -18,50 +18,23 @@
 
 namespace sof {
 
-OverlapContainer::OverlapContainer( const ContainerType containerType,
+OverlapContainer::OverlapContainer(
 									const std::string& readsFileName,
 									const BWT* pBWT,
 									const LexicographicIndex& lexicoIndex,
 									ReadsInfo& readsInfo,
 									const readLen_t minOverlap,
 									const bool bSetReadsInfo)
-		: 	m_containerType(containerType),
-			m_readsFileName(readsFileName),
+		: 	m_readsFileName(readsFileName),
 			m_pBWT(pBWT),
 			m_lexicoIndex(lexicoIndex),
 			m_readsInfo(readsInfo),
 			m_minOverlap(minOverlap),
-			m_bSetReadsInfo(bSetReadsInfo) {
+			m_bSetReadsInfo(bSetReadsInfo),
+			m_overlapContainerReader(std::ifstream(readsFileName+".container")){
 
-	Timer t("Overlap Container construction time:");
-	m_container = std::vector<std::vector<OverlapInfo> >(
-			m_readsInfo.get_numReads());
 
-	SeqReader reader(m_readsFileName, SRF_NO_VALIDATION);
-	SeqRecord record;
 
-	//std::cout<<"inside container constructor:"<<std::endl;
-	numReads_t virtualID = 0;
-	while (reader.get(record)) {
-
-		if (m_readsInfo.get_isValid(virtualID)) {
-
-			//std::cout<<"inside while loop"<<std::endl;
-			Read read = get_read(record, virtualID);
-			//std::cout<<"get_read called:"<<std::endl;
-			if (m_bSetReadsInfo)
-				update_readsInfo(read);
-			//std::cout<<"readsInfo called:"<<std::endl;
-			update_container(read);
-			//std::cout<<"update container called:"<<std::endl;
-
-		}
-		virtualID++;
-
-		if(!(virtualID%20000))
-			std::cout<<virtualID<<"number of reads processed\n";
-
-	}
 }
 
 const std::vector<OverlapInfo>& OverlapContainer::operator [](const numReads_t index) const {
@@ -93,8 +66,8 @@ Read OverlapContainer::get_read(const SeqRecord& record,
 	read.virtualID = virtualID;
 	read.sequence = record.seq.toString();
 
-	if(m_containerType == REVERSE_OVERLAPS)
-		std::reverse(read.sequence.begin(), read.sequence.end());
+//	if(m_containerType == REVERSE_OVERLAPS)
+//		std::reverse(read.sequence.begin(), read.sequence.end());
 
 	read.seqLength = record.seq.length();
 
@@ -109,14 +82,14 @@ void OverlapContainer::update_readsInfo(const Read& read) {
 
 }
 
-void OverlapContainer::update_container(const Read& read) {
+void OverlapContainer::update_container(const Read& read, OverlapOperations& overlapOperations) {
 
-	OverlapOperations overlapOperations;
+
 
 	//OverlapInfoVector overlapInfoVector;
 	BWTInterval bwtIntervalofIndex1;
-	bwtIntervalofIndex1 = overlapOperations.get_overlaps(
-			m_pBWT, read.sequence, m_minOverlap, m_container[read.virtualID]);
+	bwtIntervalofIndex1 = overlapOperations.write_overlaps(
+			m_pBWT, read.sequence, m_minOverlap, read.virtualID, m_overlapContainerWriter);
 
 	//set reads validity
 	if (m_bSetReadsInfo && m_bIsRepeatReadPresent)
@@ -127,6 +100,52 @@ void OverlapContainer::update_container(const Read& read) {
 
 numReads_t OverlapContainer::get_size() const {
 	return m_container.size();
+}
+
+void OverlapContainer::writeToFile() {
+	Timer t("Overlap Container construction time:");
+	m_overlapContainerWriter = std::ofstream(m_readsFileName+".container");
+	OverlapOperations overlapOperations;
+
+	SeqReader reader(m_readsFileName, SRF_NO_VALIDATION);
+	SeqRecord record;
+
+	//std::cout<<"inside container constructor:"<<std::endl;
+	numReads_t virtualID = 0;
+	while (reader.get(record)) {
+
+		if (m_readsInfo.get_isValid(virtualID)) {
+
+			Read read = get_read(record, virtualID);
+			//if (m_bSetReadsInfo)
+			update_readsInfo(read);
+			update_container(read, overlapOperations);
+
+
+			record.seq.reverseComplement();
+			read = get_read(record, virtualID+1);
+			update_readsInfo(read);
+			update_container(read, overlapOperations);
+
+		}
+		virtualID+=2;
+
+		if(!(virtualID%20000))
+			std::cout<<virtualID<<"number of reads processed\n";
+
+	}
+	m_overlapContainerWriter.close();
+	std::cout<<"total overlaps written: "<<overlapOperations.getOverlapWriteCount()<<'\n';
+
+}
+
+void OverlapContainer::readFromFile() {
+
+	m_container = std::vector<OverlapInfoVector >(m_readsInfo.get_numReads());
+
+	OverlapOperations overlapOperations;
+	overlapOperations.read_overlaps(m_overlapContainerReader, m_container, m_readsInfo);
+	std::cout<<"total overlap operations read: "<<overlapOperations.getOverlapReadCount()<<'\n';
 }
 
 void OverlapContainer::make_repeats_invalid(numReads_t virtualID,
