@@ -21,6 +21,8 @@ ReadOperations::ReadOperations(	const BWT* pBWT,
 			m_readsInfo(readsInfo),
 			m_lexicoIndex(lexicoIndex),
 			m_minOverlap(minOverlap){
+
+	m_tempEdgeWriter = std::ofstream("temp_edge_file.be");
 }
 
 CurrentRead ReadOperations::get_read(numReads_t virtualReadID) {
