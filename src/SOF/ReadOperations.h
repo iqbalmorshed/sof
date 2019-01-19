@@ -28,9 +28,9 @@ public:
 					ReadsInfo& readsInfo);
 	virtual ~ReadOperations();
 
-	virtual CurrentRead get_read(	numReads_t virtualReadID) = 0;
+	CurrentRead get_read(	numReads_t virtualReadID);
 	void filter_edges(CurrentRead& currentRead);
-	virtual void write_edges(CurrentRead& currrentRead) = 0;
+	void write_edges(CurrentRead& currrentRead);
 
 protected:
 	const BWT* m_pBWT;
@@ -44,6 +44,9 @@ private:
 	void filter_using_read(	CurrentRead& currentRead,
 							numReads_t virtualID,
 							readLen_t positionCurrentRead);
+	inline bool isBothReverseComplement(bool isSourceRevComp, numReads_t virtualID){
+		return isSourceRevComp && virtualID%2;
+	}
 
 };
 

@@ -23,7 +23,6 @@ libsof_a_SOURCES = \
 	EdgeContainer.h EdgeContainer.cpp \
 	FileWriter.h FileWriter.cpp \
 	LexicographicIndex.h LexicographicIndex.cpp \
-	OperationOnBE.h OperationOnBE.cpp \
 	OverlapOperations.h OverlapOperations.cpp \
 	OverlapContainer.h OverlapContainer.cpp	\
 	ReadsInfo.h ReadsInfo.cpp \

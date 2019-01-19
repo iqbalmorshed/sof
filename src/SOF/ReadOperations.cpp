@@ -7,6 +7,8 @@
 
 #include "ReadOperations.h"
 
+#include "FileWriter.h"
+
 namespace sof {
 
 ReadOperations::ReadOperations(	const BWT* pBWT,
@@ -19,6 +21,15 @@ ReadOperations::ReadOperations(	const BWT* pBWT,
 			m_readsInfo(readsInfo),
 			m_lexicoIndex(lexicoIndex),
 			m_minOverlap(minOverlap){
+}
+
+CurrentRead ReadOperations::get_read(numReads_t virtualReadID) {
+
+	return CurrentRead(virtualReadID, m_overlapContainer[virtualReadID],
+								m_readsInfo.get_readLen(virtualReadID),
+								m_minOverlap);
+
+
 }
 
 void ReadOperations::filter_edges(CurrentRead& currentRead) {
@@ -76,6 +87,48 @@ void ReadOperations::filter_using_read(	CurrentRead& currentRead,
 		 else
 			 break;
 
+	}
+
+}
+
+void ReadOperations::write_edges(CurrentRead& currentRead) {
+
+	EdgeInfo edgeInfo;
+	edgeInfo.sourceVertexID = currentRead.m_virtualID;
+
+	OverlapInfoVector irreducibleIntervals;
+
+	currentRead.get_all_irreducible_intervals(irreducibleIntervals);
+
+	if (irreducibleIntervals.size())
+		m_readsInfo.set_isVertex(edgeInfo.sourceVertexID, true);
+
+	bool isSourceRevComp = edgeInfo.sourceVertexID % 2;
+	for (auto &intervalElement : irreducibleIntervals) {
+
+		for (auto i = intervalElement.terminalInterval.lower;
+				i <= intervalElement.terminalInterval.upper; i++) {
+
+			numReads_t virtualID = m_lexicoIndex[i];
+
+			//prevent invalid reads and self-edges
+			if (m_readsInfo.get_isValid(virtualID)
+					&& !isBothReverseComplement(isSourceRevComp, virtualID)
+					&& virtualID/2 != edgeInfo.sourceVertexID/2) {
+
+				m_readsInfo.set_isVertex(virtualID, true);
+				edgeInfo.destinationVertexIDs.push_back(virtualID);
+				readLen_t overlapWithSource = m_readsInfo.get_readLen(edgeInfo.sourceVertexID)
+						- intervalElement.readIndex;
+				edgeInfo.overlapWithSource.push_back(overlapWithSource);
+			}
+
+		}
+	}
+
+	if(edgeInfo.destinationVertexIDs.size()){
+		FileWriter fileWriter;
+		fileWriter.write_temporary_edges(edgeInfo, m_tempEdgeWriter);
 	}
 
 }

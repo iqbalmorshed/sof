@@ -14,7 +14,6 @@
 #include "CurrentRead.h"
 #include "FileWriter.h"
 #include "LexicographicIndex.h"
-#include "OperationOnBE.h"
 #include "OverlapContainer.h"
 #include "ReadOperations.h"
 #include "ReadsInfo.h"
@@ -81,10 +80,7 @@ void StringGraph::construct_edges(	const BWT* pBWT,
 									const readLen_t minOverlap) {
 
 	Timer t(std::to_string(edgeType)+"type edge construction time:");
-	ReadOperations *readOp;
-
-
-	readOp = new OperationOnBE(nullptr, overlapContainer, lexicoIndex,
+	ReadOperations readOp(nullptr, overlapContainer, lexicoIndex,
 									minOverlap, readsInfo);
 	std::cout<<"readOp successfully created"<<std::endl;
 
@@ -93,19 +89,18 @@ void StringGraph::construct_edges(	const BWT* pBWT,
 
 		//std::cout<<"virtual id processed"<<virtualID<<std::endl;
 		if (readsInfo.get_isValid(virtualID)) {
-			CurrentRead currentRead = readOp->get_read(virtualID);
+			CurrentRead currentRead = readOp.get_read(virtualID);
 			//currentRead.print_intervals();
 			///std::cout<<"collected current read"<<std::endl;
-			readOp->filter_edges(currentRead);
+			readOp.filter_edges(currentRead);
 			//std::cout<<"filtered current read"<<std::endl;
-			readOp->write_edges(currentRead);
+			readOp.write_edges(currentRead);
 			//currentRead.print_intervals();
 
 		}
 
 	}
 
-	delete readOp;
 	std::cout << edgeType << " type edge construction Completed" << std::endl;
 
 
