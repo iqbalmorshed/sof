@@ -140,3 +140,47 @@ void sof::OverlapOperations::read_overlaps(	std::ifstream& overlapReader,
 
 }
 
+numReads_t sof::OverlapOperations::read_overlaps_upto_limit(
+		std::ifstream& overlapReader,
+		std::vector<OverlapInfoVector>& container,
+		const ReadsInfo& readsInfo,
+		int maxContainerSize) {
+
+	m_overlapReadCount =0;
+	numReads_t sourceVertex;
+
+	numReads_t readCount = 0;
+	while (overlapReader && m_overlapReadCount < maxContainerSize) {
+		std::string strInput;
+		getline(overlapReader, strInput);
+
+		std::stringstream ss;
+
+		readLen_t seqIndex;
+		TerminalInterval terminalInterval;
+		OverlapInfo overlapInfo;
+
+		ss << strInput;
+		ss >> sourceVertex;
+
+		container.push_back(std::vector<OverlapInfo>());
+
+		if(readsInfo.get_isValid(sourceVertex)){
+
+			while (ss >> seqIndex >> terminalInterval.lower >> terminalInterval.upper) {
+				overlapInfo.readIndex = seqIndex;
+				overlapInfo.terminalInterval = terminalInterval;
+				container[readCount].push_back(overlapInfo);
+				m_overlapReadCount++;
+			}
+		}
+		readCount++;
+	}
+	std::cout<<"total number of overlaps in this chunk: "<<m_overlapReadCount<<'\n';
+	std::cout<<"overlapInfo size :"<<sizeof(OverlapInfo)<<'\n';
+	std::cout<<"total size in bytes: "<<m_overlapReadCount*sizeof(OverlapInfo)<<'\n';
+	std::cout<<"container capacity: "<<container.capacity()<<'\n';
+	std::cout<<"container size: "<<container.size()<<'\n';
+	return sourceVertex;
+
+}

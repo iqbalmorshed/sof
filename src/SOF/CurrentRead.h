@@ -26,10 +26,10 @@ struct PoppedInterval {
 class CurrentRead {
 
 public:
-	CurrentRead(numReads_t virtualID,
-				const OverlapInfoVector& readOverlaps,
+	CurrentRead(numReads_t virtualID,				const OverlapInfoVector& readOverlaps,
 				readLen_t readLength,
 				readLen_t minOverlap);
+	CurrentRead(){}
 
 	void split_interval(readLen_t index,
 						TerminalInterval terminalInterval);
@@ -42,8 +42,8 @@ public:
 
 	void print_intervals();
 
-	const readLen_t m_maxIndex;
-	const numReads_t m_virtualID;
+	readLen_t m_maxIndex;
+	numReads_t m_virtualID;
 
 
 private:

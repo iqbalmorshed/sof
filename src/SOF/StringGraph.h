@@ -38,6 +38,7 @@ public:
 
 };
 
+
 class StringGraph {
 public:
 	StringGraph(InputData inputData);
@@ -45,13 +46,16 @@ public:
 	isDone_t construct();
 
 private:
-	void construct_edges(	const BWT* pBWT,
+	void construct_edges(	const ChunkInfo& chunkInfo,
 							const OverlapContainer& overlapContainer,
-							EdgeType edgeType,
 							ReadsInfo& readsInfo,
 							const LexicographicIndex& lexicoIndex,
 							const std::string& readsFileName,
 							const readLen_t minOverlap);
+	void construct_edges_using_partial_container(	OverlapContainer& overlapContainer,
+													ReadsInfo& readsInfo,
+													const LexicographicIndex& lexicoIndex);
+
 	const InputData m_inputData;
 
 };

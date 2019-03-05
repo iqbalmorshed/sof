@@ -11,26 +11,68 @@
 
 namespace sof {
 
-ReadOperations::ReadOperations(	const BWT* pBWT,
+ReadOperations::ReadOperations(	const ChunkInfo& chunkInfo,
 								const OverlapContainer& overlapContainer,
 								const LexicographicIndex& lexicoIndex,
-								const readLen_t minOverlap,
-								ReadsInfo& readsInfo)
-		: 	m_pBWT(pBWT),
+								ReadsInfo& readsInfo,
+								const std::string& readsFileName,
+								const readLen_t minOverlap)
+		: 	m_chunkInfo(chunkInfo),
 			m_overlapContainer(overlapContainer),
-			m_readsInfo(readsInfo),
 			m_lexicoIndex(lexicoIndex),
+			m_readsInfo(readsInfo),
+			m_readsFileName(readsFileName),
 			m_minOverlap(minOverlap){
 
-	m_tempEdgeWriter = std::ofstream("temp_edge_file.be");
+
+	m_tempEdgeReader = std::ifstream(m_readsFileName + ".filtered-"+ std::to_string(m_chunkInfo.ID));
+
+	if(m_chunkInfo.end == m_readsInfo.get_numReads()-1)
+		m_tempEdgeWriter = std::ofstream("temp_edge_file.be");
+	else
+		m_tempEdgeWriter = std::ofstream(m_readsFileName + ".filtered-"+ std::to_string(m_chunkInfo.ID+1));
+	//m_tempEdgeWriter = std::ofstream("temp_edge_file.be");
+	//m_tempEdgeWriter = std::ofstream("container-"+(m_chunkInfo.ID+1));
 }
 
-CurrentRead ReadOperations::get_read(numReads_t virtualReadID) {
+bool ReadOperations::get_read(CurrentRead& currentRead) {
 
-	return CurrentRead(virtualReadID, m_overlapContainer[virtualReadID],
-								m_readsInfo.get_readLen(virtualReadID),
-								m_minOverlap);
 
+
+	std::string strInput;
+	getline(m_tempEdgeReader, strInput);
+
+	if(strInput!=""){
+		std::stringstream ss;
+		numReads_t virtualReadID;
+		readLen_t seqIndex;
+		TerminalInterval terminalInterval;
+		OverlapInfo overlapInfo;
+		std::vector<OverlapInfo> container;
+
+		ss << strInput;
+		ss >> virtualReadID;
+
+		//std::cout<<"inside get read: strInput "<<strInput<<"\n";
+
+		if(m_readsInfo.get_isValid(virtualReadID)){
+			while (ss >> seqIndex >> terminalInterval.lower >> terminalInterval.upper) {
+				overlapInfo.readIndex = seqIndex;
+				overlapInfo.terminalInterval = terminalInterval;
+				container.push_back(overlapInfo);
+				//m_overlapReadCount++;
+			}
+			currentRead = CurrentRead(	virtualReadID,
+										container,
+										m_readsInfo.get_readLen(virtualReadID),
+										m_minOverlap);
+		}
+
+
+		return true;
+	}
+
+	return false;
 
 }
 
@@ -53,54 +95,76 @@ void ReadOperations::filter_edges(CurrentRead& currentRead) {
 
 				//second conditoin in if statement prevents self-edge from filtering
 				if (m_readsInfo.get_isValid(virtualID)
-						&& currentRead.m_virtualID != virtualID)
+						&& currentRead.m_virtualID != virtualID && isWithinRange(virtualID)){
 
 					//if(currentRead.m_virtualID == 12060320)std::cout<<"filter using: virID: "<<virtualID<<",lexID: "<<lexicoID<<" from index: "<<poppedInterval.index<<"\n";
-					filter_using_read(currentRead, virtualID,
-										poppedInterval.index);
+					//puts("before filter_using_read");
+					if(m_chunkInfo.start)
+						filter_using_read(currentRead, virtualID % m_chunkInfo.start, poppedInterval.index);
+					else
+						filter_using_read(currentRead, virtualID, poppedInterval.index);
+				}
+
 			}
 		}
 	}
 //	std::cout<<"filtering for this read done.\n";
 }
 
+
+
 void ReadOperations::filter_using_read(	CurrentRead& currentRead,
 										numReads_t virtualID,
 										readLen_t positionCurrentRead) {
 
 
-	 auto it = m_overlapContainer[virtualID].end();
+	 for(auto it = m_overlapContainer[virtualID].rbegin();
+			 it != m_overlapContainer[virtualID].rend() &&
+					 (it->readIndex + positionCurrentRead) <= currentRead.m_maxIndex;
+			 it++) {
 
-	 while( it != m_overlapContainer[virtualID].begin()) {
-		 it--;
-		 readLen_t splitPosition = it->readIndex + positionCurrentRead;
-
-//		 if(currentRead.m_virtualID == 12060320)std::cout<<"split position: "<<splitPosition<<"curr read max index: "<<currentRead.m_maxIndex<<'\n';
-
-		 if(splitPosition <= currentRead.m_maxIndex){
-
-//			 if(currentRead.m_virtualID == 12060320){
-//				 std::cout << "split position: " << int(splitPosition) << "interval: low:"
-//								<< it->terminalInterval.lower<<" upper:"<<it->terminalInterval.upper<<'\n';
-//			 }
-			 currentRead.split_interval(splitPosition, it->terminalInterval);
+		currentRead.split_interval(it->readIndex + positionCurrentRead, it->terminalInterval);
 //			 std::cout<<"splitting done\n";
-		 }
-		 else
-			 break;
-
 	}
 
 }
 
 void ReadOperations::write_edges(CurrentRead& currentRead) {
 
-	EdgeInfo edgeInfo;
-	edgeInfo.sourceVertexID = currentRead.m_virtualID;
+
+
+	if(m_chunkInfo.end == m_readsInfo.get_numReads()-1)
+		write_completely_filtered_edges(currentRead);
+	else
+		write_partially_filtered_edges(currentRead);
+
+
+
+}
+void ReadOperations::write_partially_filtered_edges(CurrentRead& currentRead) {
 
 	OverlapInfoVector irreducibleIntervals;
 
 	currentRead.get_all_irreducible_intervals(irreducibleIntervals);
+
+	m_tempEdgeWriter<<currentRead.m_virtualID<<" ";
+
+	for (auto intervalElement = irreducibleIntervals.rbegin();
+			intervalElement!= irreducibleIntervals.rend(); intervalElement++) {
+		m_tempEdgeWriter<<intervalElement->readIndex<<" "
+				<< intervalElement->terminalInterval.lower<<" "
+				<< intervalElement->terminalInterval.upper<<" ";
+	}
+	m_tempEdgeWriter<<"\n";
+
+}
+void ReadOperations::write_completely_filtered_edges(CurrentRead& currentRead) {
+
+	OverlapInfoVector irreducibleIntervals;
+	currentRead.get_all_irreducible_intervals(irreducibleIntervals);
+
+	EdgeInfo edgeInfo;
+	edgeInfo.sourceVertexID = currentRead.m_virtualID;
 
 	if (irreducibleIntervals.size())
 		m_readsInfo.set_isVertex(edgeInfo.sourceVertexID, true);
@@ -135,8 +199,11 @@ void ReadOperations::write_edges(CurrentRead& currentRead) {
 
 }
 
+
+
 } /* namespace sof */
 
 sof::ReadOperations::~ReadOperations() {
-
+	m_tempEdgeReader.close();
+	m_tempEdgeWriter.close();
 }

@@ -46,6 +46,7 @@ public:
 
 	void writeToFile();
 	void readFromFile();
+	ChunkInfo readPartiallyFromFile(ChunkInfo prevChunkInfo);
 
 	const std::vector<OverlapInfo>& operator[](const numReads_t index) const;
 	void print();
@@ -65,6 +66,8 @@ private:
 	ReadsInfo& m_readsInfo;
 	const readLen_t m_minOverlap;
 	const bool m_bSetReadsInfo;
+	const int64_t m_maxContainerSize;
+
 
 	const bool m_bIsRepeatReadPresent = DEFAULT_REPEAT_PRESENCE;
 	const bool m_bIsProperSubstringPresent = DEFAULT_SUBSTRING_PRESENCE;

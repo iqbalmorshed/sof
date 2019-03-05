@@ -60,6 +60,7 @@ static const char *SGA_USAGE_MESSAGE =
 "Commands:\n"
 "           preprocess               filter and quality-trim reads\n"
 "           index                    build the BWT and FM-index for a set of reads\n"
+"           indexSOF                 build the BWT and FM-index for a set of reads and their reverse complement\n"
 "           merge                    merge multiple BWT/FM-index files into a single index\n"
 "           bwt2fa                   transform a bwt back into a set of sequences\n"
 "           correct                  correct sequencing errors in a set of reads\n"

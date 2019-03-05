@@ -38,7 +38,9 @@ sof::TerminalInterval sof::BWTBySampling::get_backward_terminal_interval(const B
 void sof::BWTBySampling::print() const {
 	m_pBWT->print();
 }
-
+void sof::BWTBySampling::printInfo() const {
+	m_pBWT->printInfo();
+}
 sof::BWTBySampling::~BWTBySampling() {
 	delete m_pBWT;
 }
@@ -57,3 +59,5 @@ sof::BWTInterval sof::BWTBySampling::get_backward_interval(	const BWTInterval bw
 	return newBWTInterval;
 
 }
+
+

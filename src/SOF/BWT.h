@@ -26,6 +26,7 @@ public:
 	virtual BWTInterval get_backward_interval(const BWTInterval,const char ch)const = 0;
 	virtual TerminalInterval get_backward_terminal_interval(const BWTInterval)const = 0;
 	virtual void print()const = 0;
+	virtual void printInfo()const = 0;
 
 	inline numBases_t get_bwtLength()const {return m_bwtLength;}
 	inline numReads_t get_numReads()const {return m_numReads;}

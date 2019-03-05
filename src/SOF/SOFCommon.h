@@ -38,6 +38,12 @@ struct OverlapInfo {
 	readLen_t readIndex;
 };
 
+struct ChunkInfo{
+	int ID = -1;
+	numReads_t start = -1;
+	numReads_t end = -1;
+};
+
 using OverlapInfoVector = std::vector<OverlapInfo>;
 } /* namespace sof */
 

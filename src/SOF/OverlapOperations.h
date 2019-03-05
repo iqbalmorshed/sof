@@ -34,6 +34,10 @@ public:
 	void read_overlaps(	std::ifstream& overlapReader,
 						std::vector<OverlapInfoVector>& container,
 						const ReadsInfo& readsInfo);
+	numReads_t read_overlaps_upto_limit(	std::ifstream& overlapReader,
+								std::vector<OverlapInfoVector>& container,
+								const ReadsInfo& readsInfo,
+								int maxContainerSize);
 
 	BWTInterval get_overlaps(	const BWT* pBWT,
 								const std::string& sequence,

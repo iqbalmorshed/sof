@@ -61,7 +61,6 @@ void CurrentRead::get_all_irreducible_intervals(OverlapInfoVector& overlapInfoVe
 			}
 		}
 	}
-
 }
 
 PoppedInterval CurrentRead::pop_intervals_from_lowest_index() const {

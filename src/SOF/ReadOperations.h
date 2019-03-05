@@ -21,23 +21,26 @@ namespace sof {
 class ReadOperations {
 
 public:
-	ReadOperations(	const BWT *pBWT,
+	ReadOperations(	const ChunkInfo& chunkInfo,
 					const OverlapContainer& overlapContainer,
 					const LexicographicIndex& lexicoIndex,
-					const readLen_t minOverlap,
-					ReadsInfo& readsInfo);
+					ReadsInfo& readsInfo,
+					const std::string& readsFileName,
+					const readLen_t minOverlap);
 	virtual ~ReadOperations();
 
-	CurrentRead get_read(	numReads_t virtualReadID);
+	bool get_read(CurrentRead& currentRead);
 	void filter_edges(CurrentRead& currentRead);
 	void write_edges(CurrentRead& currrentRead);
 
 protected:
-	const BWT* m_pBWT;
+	const ChunkInfo m_chunkInfo;
 	const OverlapContainer& m_overlapContainer;
 	const LexicographicIndex& m_lexicoIndex;
 	const readLen_t m_minOverlap;
 	ReadsInfo& m_readsInfo;
+	const std::string& m_readsFileName;
+	std::ifstream m_tempEdgeReader;
 	std::ofstream m_tempEdgeWriter;
 
 private:
@@ -47,6 +50,12 @@ private:
 	inline bool isBothReverseComplement(bool isSourceRevComp, numReads_t virtualID){
 		return isSourceRevComp && virtualID%2;
 	}
+	inline bool isWithinRange(numReads_t virtualID){
+		return virtualID >= m_chunkInfo.start && virtualID <= m_chunkInfo.end;
+	}
+	void write_partially_filtered_edges(CurrentRead& currentRead);
+	void write_completely_filtered_edges(CurrentRead& currentRead);
+
 
 };
 

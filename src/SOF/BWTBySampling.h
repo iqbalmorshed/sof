@@ -26,6 +26,7 @@ public:
 	TerminalInterval get_backward_terminal_interval(const BWTInterval) const
 			override;
 	void print() const override;
+	void printInfo() const override;
 
 private:
 	RLBWT *m_pBWT;

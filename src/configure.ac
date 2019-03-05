@@ -92,8 +92,8 @@ fi
 
 # Set compiler flags.
 AC_SUBST(AM_CXXFLAGS, "-Wall -Wextra $fail_on_warning -Wno-unknown-pragmas")
-AC_SUBST(CXXFLAGS, "-O3 -fPIC")
-AC_SUBST(CFLAGS, "-O3 -fPIC")
+AC_SUBST(CXXFLAGS, "-g -O3 -fPIC")
+AC_SUBST(CFLAGS, "-g -O3 -fPIC")
 AC_SUBST(CPPFLAGS, "$CPPFLAGS $openmp_cppflags $sparsehash_include $bamtools_include")
 AC_SUBST(LDFLAGS, "$openmp_cppflags $external_malloc_ldflags $bamtools_ldflags $LDFLAGS")
 

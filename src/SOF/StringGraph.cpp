@@ -35,6 +35,10 @@ isDone_t StringGraph::construct() {
 		//construct BWT in your desired way
 		BWT *pBWT;
 		pBWT = new BWTBySampling(m_inputData.bwtFileName);
+		std::cout<<"BWT: number of reads: "<<pBWT->get_numReads()<<'\n';
+		std::cout<<"BWT: number of bases: "<<pBWT->get_bwtLength()<<'\n';
+
+		pBWT->printInfo();
 
 		LexicographicIndex lexicoIndex(m_inputData.lexIndexFileName);
 
@@ -49,13 +53,16 @@ isDone_t StringGraph::construct() {
 		delete pBWT;
 		std::cout<<"BWT is deleted.\n";
 
-		overlapContainer.readFromFile();
-		std::cout<<"overlapContainer loaded from file\n";
+//		overlapContainer.readFromFile();
+//		std::cout<<"overlapContainer loaded from file\n";
+
+		construct_edges_using_partial_container(overlapContainer,
+				readsInfo, lexicoIndex);
 
 		// Construct BE Edges
-		construct_edges(nullptr, overlapContainer, BE_EDGE, readsInfo,
-						lexicoIndex, m_inputData.readsFileName,
-						m_inputData.minOverlap);
+//		construct_edges(nullptr, overlapContainer, BE_EDGE, readsInfo,
+//						lexicoIndex, m_inputData.readsFileName,
+//						m_inputData.minOverlap);
 
 
 
@@ -71,38 +78,59 @@ isDone_t StringGraph::construct() {
 	return true;
 }
 
-void StringGraph::construct_edges(	const BWT* pBWT,
+void StringGraph::construct_edges(	const ChunkInfo& chunkInfo,
 									const OverlapContainer& overlapContainer,
-									EdgeType edgeType,
 									ReadsInfo& readsInfo,
 									const LexicographicIndex& lexicoIndex,
 									const std::string& readsFileName,
 									const readLen_t minOverlap) {
 
-	Timer t(std::to_string(edgeType)+"type edge construction time:");
-	ReadOperations readOp(nullptr, overlapContainer, lexicoIndex,
-									minOverlap, readsInfo);
+	Timer t("Edge construction time:");
+	ReadOperations readOp(	chunkInfo, overlapContainer, lexicoIndex,
+							readsInfo, readsFileName, minOverlap);
 	std::cout<<"readOp successfully created"<<std::endl;
 
 	auto numReads = readsInfo.get_numReads();
-	for (numReads_t virtualID = 0; virtualID < numReads; virtualID++) {
 
-		//std::cout<<"virtual id processed"<<virtualID<<std::endl;
-		if (readsInfo.get_isValid(virtualID)) {
-			CurrentRead currentRead = readOp.get_read(virtualID);
-			//currentRead.print_intervals();
-			///std::cout<<"collected current read"<<std::endl;
-			readOp.filter_edges(currentRead);
-			//std::cout<<"filtered current read"<<std::endl;
-			readOp.write_edges(currentRead);
-			//currentRead.print_intervals();
-
-		}
+	CurrentRead currentRead;
+	while (readOp.get_read(currentRead)) {
+		//currentRead.print_intervals();
+		//std::cout<<"collected current read"<<std::endl;
+		readOp.filter_edges(currentRead);
+		//std::cout<<"filtered current read"<<std::endl;
+		readOp.write_edges(currentRead);
+		//currentRead.print_intervals();
 
 	}
 
-	std::cout << edgeType << " type edge construction Completed" << std::endl;
 
+
+	std::cout <<"Chunk: "<< chunkInfo.ID << " type edge construction Completed" << std::endl;
+
+
+
+}
+
+void StringGraph::construct_edges_using_partial_container(
+		OverlapContainer& overlapContainer,
+		ReadsInfo& readsInfo,
+		const LexicographicIndex& lexicoIndex) {
+//	int chunkSize = readsInfo.get_numReads() / numParts + 1;
+
+	ChunkInfo chunkInfo;
+	while(chunkInfo.end != readsInfo.get_numReads()-1){
+
+		//construct_partial_container(overlapContainer, chunkInfo);
+		//std::cout<<"inside construct_edges_using_partial_container:\n";
+		chunkInfo = overlapContainer.readPartiallyFromFile(chunkInfo);
+		//std::cout<<"container created\n";
+		construct_edges(chunkInfo, overlapContainer, readsInfo,
+						lexicoIndex, m_inputData.readsFileName,
+						m_inputData.minOverlap);
+
+		std::cout<<"chunkInfo.end: "<<chunkInfo.end <<"num of Reads: "<<readsInfo.get_numReads()<<'\n';
+		std::cout<<"chunkID: "<<chunkInfo.ID<<"finished\n\n";
+	}
 
 
 }

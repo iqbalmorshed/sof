@@ -31,7 +31,9 @@ OverlapContainer::OverlapContainer(
 			m_readsInfo(readsInfo),
 			m_minOverlap(minOverlap),
 			m_bSetReadsInfo(bSetReadsInfo),
-			m_overlapContainerReader(std::ifstream(readsFileName+".container")){
+			m_overlapContainerReader(std::ifstream(readsFileName+".filtered-0")),
+			m_maxContainerSize(readsInfo.get_numReads()*2)
+{ //need to work on this
 
 
 
@@ -104,7 +106,7 @@ numReads_t OverlapContainer::get_size() const {
 
 void OverlapContainer::writeToFile() {
 	Timer t("Overlap Container construction time:");
-	m_overlapContainerWriter = std::ofstream(m_readsFileName+".container");
+	m_overlapContainerWriter = std::ofstream(m_readsFileName+".filtered-0");
 	OverlapOperations overlapOperations;
 
 	SeqReader reader(m_readsFileName, SRF_NO_VALIDATION);
@@ -172,6 +174,24 @@ void OverlapContainer::make_repeats_invalid(numReads_t virtualID,
 			m_readsInfo.set_isValid(newVirtualID, false);
 		}
 	}
+
+}
+
+
+ChunkInfo OverlapContainer::readPartiallyFromFile(ChunkInfo prevChunkInfo) {
+
+	OverlapOperations overlapOperations;
+	ChunkInfo currChunkInfo;
+	currChunkInfo.ID = prevChunkInfo.ID+1;
+	currChunkInfo.start = prevChunkInfo.end+1;
+	std::cout<<"containter size info: for chunk :"<<currChunkInfo.ID <<"\n";
+	m_container.clear();
+	currChunkInfo.end = overlapOperations.read_overlaps_upto_limit(
+			m_overlapContainerReader,
+			m_container, m_readsInfo, m_maxContainerSize);
+
+
+	return currChunkInfo;
 
 }
 
