@@ -31,10 +31,15 @@ public:
 	inline numBases_t get_bwtLength()const {return m_bwtLength;}
 	inline numReads_t get_numReads()const {return m_numReads;}
 
+	inline int getBwtSizeInBytes() const {
+		return m_bwtSizeInBytes;
+	}
+
 protected:
 	const std::string& m_bwtFileName;
 	numBases_t m_bwtLength;
 	numReads_t m_numReads;
+	int m_bwtSizeInBytes;
 
 private:
 

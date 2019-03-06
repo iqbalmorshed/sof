@@ -128,11 +128,6 @@ void FileWriter::write_edgeInfo(const std::vector<std::string>& realIDVector,
 
 			sourceIndex = readsInfo.get_readLen(sourceVertex) - overlapLength;
 			if(!isSourceRC && !isDestinationRC){ //BE edge
-				if(realIDVector[sourceVertex/2] == "x/480"){
-					std::cout<<"source vertex: "<<sourceVertex<<" str input"<<strInput<<"\n"<<
-					"destination vertex :"<<destinationVertex<<"destination vertex real id: "<<
-					realIDVector[destinationVertex/2]<<"\n";
-				}
 
 				int sourceStartIndex = sourceIndex;
 				int sourceLength = readsInfo.get_readLen(sourceVertex);

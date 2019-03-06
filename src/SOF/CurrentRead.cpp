@@ -54,8 +54,8 @@ void CurrentRead::get_all_irreducible_intervals(OverlapInfoVector& overlapInfoVe
 	OverlapInfo overlapInfo;
 	for (readLen_t i = 0; i <= m_maxIndex; i++) {
 		if (m_nElementsInIndex[i]) {
-			for (auto &element : m_indexedReadOverlaps[i]) {
-				overlapInfo.terminalInterval = element;
+			for (auto it = m_indexedReadOverlaps[i].rbegin(); it!= m_indexedReadOverlaps[i].rend();it++) {
+				overlapInfo.terminalInterval = *it;
 				overlapInfo.readIndex = i;
 				overlapInfoVector.push_back(overlapInfo);
 			}
@@ -75,14 +75,32 @@ PoppedInterval CurrentRead::pop_intervals_from_lowest_index() const {
 	return poppedInterval;
 }
 
+void CurrentRead::print_intervals_in_index(readLen_t index) {
+
+	std::cout << "In read:" << m_virtualID << "index :"<<index<< '\n';
+	if (m_nElementsInIndex[index]) {
+		for (auto it = m_indexedReadOverlaps[index].begin();
+				it != m_indexedReadOverlaps[index].end(); it++) {
+			std::cout << "(" << it->lower << "," << it->upper << ") ";
+		}
+	}
+	std::cout << '\n';
+}
+
 } /* namespace sof */
 
 void sof::CurrentRead::split_interval(	readLen_t index,
 										TerminalInterval givenInterval) {
 
+	if(m_virtualID == 958 && index == 12){
+		std::cout<<"inside split interval: index: "<<index
+				<<" given interval lower:"<<givenInterval.lower
+				<<" given interval upper:"<<givenInterval.upper<<'\n';
+	}
 	if (m_nElementsInIndex[index]) {
 		auto it = m_indexedReadOverlaps[index].begin();
-
+		if(m_virtualID == 958 && index == 12)
+			std::cout<<"it->lower : "<<it->lower<<"it->upper : "<<it->upper<<'\n';
 		while (it != m_indexedReadOverlaps[index].end()
 				&& givenInterval.lower > it->lower) {
 
@@ -126,6 +144,8 @@ void sof::CurrentRead::split_interval(	readLen_t index,
 		}
 
 	}
+
+
 
 }
 

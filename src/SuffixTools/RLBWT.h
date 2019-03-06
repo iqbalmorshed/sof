@@ -25,6 +25,7 @@
 //
 // RLBWT
 //
+class BWTBySampling;
 class RLBWT
 {
     public:
@@ -268,6 +269,16 @@ class RLBWT
             assert(ci != 0);
             return RANK_ALPHABET[ci - 1];
         }
+        inline size_t getBWTSizeInBytes() const{
+        	size_t small_m_size = m_smallMarkers.capacity() * sizeof(SmallMarker);
+			size_t large_m_size = m_largeMarkers.capacity() * sizeof(LargeMarker);
+			size_t total_marker_size = small_m_size + large_m_size;
+
+			size_t bwStr_size = m_rlString.capacity() * sizeof(RLUnit);
+			size_t other_size = sizeof(*this);
+			size_t total_size = total_marker_size + bwStr_size + other_size;
+			return total_size;
+        }
 
         // Print the size of the BWT
         void printInfo() const;
@@ -280,6 +291,7 @@ class RLBWT
         friend class BWTWriterBinary;
         friend class BWTReaderAscii;
         friend class BWTWriterAscii;
+        friend class BWTBySampling;
 
         // Default sample rates for the large (64-bit) and small (8-bit) occurrence markers
         static const int DEFAULT_SAMPLE_RATE_LARGE = 8192;

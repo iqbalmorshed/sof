@@ -100,7 +100,7 @@ void ReadOperations::filter_edges(CurrentRead& currentRead) {
 					//if(currentRead.m_virtualID == 12060320)std::cout<<"filter using: virID: "<<virtualID<<",lexID: "<<lexicoID<<" from index: "<<poppedInterval.index<<"\n";
 					//puts("before filter_using_read");
 					if(m_chunkInfo.start)
-						filter_using_read(currentRead, virtualID % m_chunkInfo.start, poppedInterval.index);
+						filter_using_read(currentRead, virtualID - m_chunkInfo.start, poppedInterval.index);
 					else
 						filter_using_read(currentRead, virtualID, poppedInterval.index);
 				}
@@ -123,7 +123,7 @@ void ReadOperations::filter_using_read(	CurrentRead& currentRead,
 					 (it->readIndex + positionCurrentRead) <= currentRead.m_maxIndex;
 			 it++) {
 
-		currentRead.split_interval(it->readIndex + positionCurrentRead, it->terminalInterval);
+		 currentRead.split_interval(it->readIndex + positionCurrentRead, it->terminalInterval);
 //			 std::cout<<"splitting done\n";
 	}
 

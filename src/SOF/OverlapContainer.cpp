@@ -32,10 +32,9 @@ OverlapContainer::OverlapContainer(
 			m_minOverlap(minOverlap),
 			m_bSetReadsInfo(bSetReadsInfo),
 			m_overlapContainerReader(std::ifstream(readsFileName+".filtered-0")),
-			m_maxContainerSize(readsInfo.get_numReads()*2)
-{ //need to work on this
+			m_maxContainerSize(m_pBWT->getBwtSizeInBytes()/sizeof(OverlapInfo)){ //need to work on this
 
-
+	std::cout<<"max number of container elements :"<<m_maxContainerSize<<'\n';
 
 }
 

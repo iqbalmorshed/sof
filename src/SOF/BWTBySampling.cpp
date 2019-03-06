@@ -18,6 +18,8 @@ sof::BWTBySampling::BWTBySampling(	const std::string& bwtFileName,
 	m_pBWT = new RLBWT(bwtFileName, sampleRate);
 	m_bwtLength = static_cast<numBases_t>(m_pBWT->getBWLen());
 	m_numReads = static_cast<numReads_t>(m_pBWT->getNumStrings());
+	m_bwtSizeInBytes = static_cast<numReads_t>(m_pBWT->getBWTSizeInBytes());
+
 //	std::cout<<"Inside BWTBySampling Constructor: m_bwtLength: "<<m_bwtLength<<" m_pBWT->get:"<< m_pBWT->getBWLen()<<'\n';
 //	std::cout<<"Inside BWTBySampling Constructor: m_numReads: "<<m_numReads<<" m_pBWT->getNum:"<< m_pBWT->getNumStrings()<<'\n';
 

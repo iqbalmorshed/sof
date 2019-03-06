@@ -41,6 +41,7 @@ public:
 	void get_all_irreducible_intervals(OverlapInfoVector& overlapInfoVector) const;
 
 	void print_intervals();
+	void print_intervals_in_index(readLen_t index);
 
 	readLen_t m_maxIndex;
 	numReads_t m_virtualID;
