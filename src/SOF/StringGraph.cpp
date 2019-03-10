@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <chrono>
 
 #include "BWTBySampling.h"
 #include "CurrentRead.h"
@@ -20,6 +21,7 @@
 #include "RepeatRemoval.h"
 #include "Timer.h"
 
+namespace sc = std::chrono;
 namespace sof {
 
 StringGraph::StringGraph(InputData inputData)
@@ -85,6 +87,7 @@ void StringGraph::construct_edges(	const ChunkInfo& chunkInfo,
 									const std::string& readsFileName,
 									const readLen_t minOverlap) {
 
+	sc::microseconds getReadTime(0),filterTime(0), writeTime(0);
 	Timer t("Edge construction time:");
 	ReadOperations readOp(	chunkInfo, overlapContainer, lexicoIndex,
 							readsInfo, readsFileName, minOverlap);
@@ -93,17 +96,29 @@ void StringGraph::construct_edges(	const ChunkInfo& chunkInfo,
 	auto numReads = readsInfo.get_numReads();
 
 	CurrentRead currentRead;
+
+	auto t1 = sc::high_resolution_clock::now();
 	while (readOp.get_read(currentRead)) {
+		auto t2 = sc::high_resolution_clock::now();
+		getReadTime+= sc::duration_cast<sc::microseconds>(t2 - t1);
 		//currentRead.print_intervals();
 		//std::cout<<"collected current read"<<std::endl;
 		readOp.filter_edges(currentRead);
+		auto t3 = sc::high_resolution_clock::now();
+		filterTime+= sc::duration_cast<sc::microseconds>(t3 - t2);
 		//std::cout<<"filtered current read"<<std::endl;
 		readOp.write_edges(currentRead);
+		auto t4 = sc::high_resolution_clock::now();
+		writeTime+= std::chrono::duration_cast<sc::microseconds>(t4 - t3);
 		//currentRead.print_intervals();
-
+		t1 = sc::high_resolution_clock::now();
 	}
-
-
+	sc::microseconds total_time_ms = getReadTime+filterTime+writeTime;
+	sc::seconds total_time_s = sc::duration_cast<std::chrono::seconds> (total_time_ms);
+	std::cout<<"Total read time: "<<getReadTime.count()<<" Total filter time: "
+			<<filterTime.count()<<" Total write :"<<writeTime.count()<<'\n';
+	std::cout<<"Total chunk time (ms): "<<total_time_ms.count()<<'\n';
+	std::cout<<"Total chunk time (sec): "<<total_time_s.count()<<'\n';
 
 	std::cout <<"Chunk: "<< chunkInfo.ID << " type edge construction Completed" << std::endl;
 
