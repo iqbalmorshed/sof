@@ -150,6 +150,8 @@ numReads_t sof::OverlapOperations::read_overlaps_upto_limit(
 	numReads_t sourceVertex;
 
 	numReads_t readCount = 0;
+	std::cout<<"maxContainer size: "<<maxContainerSize<<'\n';
+//	std::cout<<"overlapReader Is empty?"<<overlapReader<<'\n';
 	while (overlapReader && m_overlapReadCount < maxContainerSize) {
 		std::string strInput;
 		getline(overlapReader, strInput);

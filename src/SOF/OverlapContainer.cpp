@@ -31,7 +31,6 @@ OverlapContainer::OverlapContainer(
 			m_readsInfo(readsInfo),
 			m_minOverlap(minOverlap),
 			m_bSetReadsInfo(bSetReadsInfo),
-			m_overlapContainerReader(std::ifstream(readsFileName+".filtered-0")),
 			m_maxContainerSize(m_pBWT->getBwtSizeInBytes()/sizeof(OverlapInfo)){ //need to work on this
 
 	std::cout<<"max number of container elements :"<<m_maxContainerSize<<'\n';
@@ -136,6 +135,7 @@ void OverlapContainer::writeToFile() {
 
 	}
 	m_overlapContainerWriter.close();
+	m_overlapContainerReader = std::ifstream(m_readsFileName+".filtered-0");
 	std::cout<<"total overlaps written: "<<overlapOperations.getOverlapWriteCount()<<'\n';
 
 }
@@ -180,6 +180,7 @@ void OverlapContainer::make_repeats_invalid(numReads_t virtualID,
 ChunkInfo OverlapContainer::readPartiallyFromFile(ChunkInfo prevChunkInfo) {
 
 	OverlapOperations overlapOperations;
+
 	ChunkInfo currChunkInfo;
 	currChunkInfo.ID = prevChunkInfo.ID+1;
 	currChunkInfo.start = prevChunkInfo.end+1;

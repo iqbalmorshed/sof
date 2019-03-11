@@ -112,6 +112,8 @@ void StringGraph::construct_edges(	const ChunkInfo& chunkInfo,
 		writeTime+= std::chrono::duration_cast<sc::microseconds>(t4 - t3);
 		//currentRead.print_intervals();
 		t1 = sc::high_resolution_clock::now();
+
+		//break;
 	}
 	sc::microseconds total_time_ms = getReadTime+filterTime+writeTime;
 	sc::seconds total_time_s = sc::duration_cast<std::chrono::seconds> (total_time_ms);
@@ -145,6 +147,7 @@ void StringGraph::construct_edges_using_partial_container(
 
 		std::cout<<"chunkInfo.end: "<<chunkInfo.end <<"num of Reads: "<<readsInfo.get_numReads()<<'\n';
 		std::cout<<"chunkID: "<<chunkInfo.ID<<"finished\n\n";
+		//break;
 	}
 
 

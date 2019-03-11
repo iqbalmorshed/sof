@@ -9,30 +9,30 @@
 
 namespace sof {
 
-CurrentRead::CurrentRead(	numReads_t virtualID,
-							const OverlapInfoVector& readOverlaps,
-							readLen_t readLength,
-							readLen_t minOverlap)
-		: 	m_virtualID(virtualID),
-			m_maxIndex(readLength - minOverlap) {
-	//std::cout<<"current read construction: started\n";
-
-	//m_indexedReadOverlaps = std::vector<IntervalVector>(m_maxIndex+1);
-	m_indexedReadOverlaps = std::vector<IntervalList>(m_maxIndex + 1);
-	m_nElementsInIndex = std::vector<numReads_t>(m_maxIndex + 1, 0);
-
-	for (auto &overlapInfo : readOverlaps) {
-		m_indexedReadOverlaps[overlapInfo.readIndex].push_back(
-				overlapInfo.terminalInterval);
-
-		m_nElementsInIndex[overlapInfo.readIndex]++;
-
-		if (m_nElementsInIndex[overlapInfo.readIndex] == 1) {
-			m_popIndexVector.push_back(overlapInfo.readIndex);
-		}
-	}
-	//std::cout<<"current read constructor: ended\n";
-}
+//CurrentRead::CurrentRead(	numReads_t virtualID,
+//							const OverlapInfoVector& readOverlaps,
+//							readLen_t readLength,
+//							readLen_t minOverlap)
+//		: 	m_virtualID(virtualID),
+//			m_maxIndex(readLength - minOverlap) {
+//	//std::cout<<"current read construction: started\n";
+//
+//	//m_indexedReadOverlaps = std::vector<IntervalVector>(m_maxIndex+1);
+//	m_indexedReadOverlaps = std::vector<IntervalList>(m_maxIndex + 1);
+//	m_nElementsInIndex = std::vector<numReads_t>(m_maxIndex + 1, 0);
+//
+//	for (auto &overlapInfo : readOverlaps) {
+//		m_indexedReadOverlaps[overlapInfo.readIndex].push_back(
+//				overlapInfo.terminalInterval);
+//
+//		m_nElementsInIndex[overlapInfo.readIndex]++;
+//
+//		if (m_nElementsInIndex[overlapInfo.readIndex] == 1) {
+//			m_popIndexVector.push_back(overlapInfo.readIndex);
+//		}
+//	}
+//	//std::cout<<"current read constructor: ended\n";
+//}
 
 bool CurrentRead::is_poppable_interval() {
 
@@ -92,15 +92,8 @@ void CurrentRead::print_intervals_in_index(readLen_t index) {
 void sof::CurrentRead::split_interval(	readLen_t index,
 										TerminalInterval givenInterval) {
 
-	if(m_virtualID == 958 && index == 12){
-		std::cout<<"inside split interval: index: "<<index
-				<<" given interval lower:"<<givenInterval.lower
-				<<" given interval upper:"<<givenInterval.upper<<'\n';
-	}
 	if (m_nElementsInIndex[index]) {
 		auto it = m_indexedReadOverlaps[index].begin();
-		if(m_virtualID == 958 && index == 12)
-			std::cout<<"it->lower : "<<it->lower<<"it->upper : "<<it->upper<<'\n';
 		while (it != m_indexedReadOverlaps[index].end()
 				&& givenInterval.lower > it->lower) {
 

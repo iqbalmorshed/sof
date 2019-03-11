@@ -26,9 +26,9 @@ struct PoppedInterval {
 class CurrentRead {
 
 public:
-	CurrentRead(numReads_t virtualID,				const OverlapInfoVector& readOverlaps,
-				readLen_t readLength,
-				readLen_t minOverlap);
+//	CurrentRead(numReads_t virtualID,				const OverlapInfoVector& readOverlaps,
+//				readLen_t readLength,
+//				readLen_t minOverlap);
 	CurrentRead(){}
 
 	void split_interval(readLen_t index,
@@ -47,12 +47,15 @@ public:
 	numReads_t m_virtualID;
 
 
-private:
+
 	//std::vector<IntervalVector> m_indexedReadOverlaps;
 	std::vector<IntervalList> m_indexedReadOverlaps;
 	std::vector<int> m_nElementsInIndex;
-	readLen_t m_popIndex = 0;
+
 	std::vector<readLen_t> m_popIndexVector;
+
+private:
+	readLen_t m_popIndex = 0;
 
 };
 

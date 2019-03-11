@@ -53,19 +53,31 @@ bool ReadOperations::get_read(CurrentRead& currentRead) {
 		ss << strInput;
 		ss >> virtualReadID;
 
-		//std::cout<<"inside get read: strInput "<<strInput<<"\n";
+//		std::cout<<"inside get read: strInput "<<strInput<<"\n";
 
 		if(m_readsInfo.get_isValid(virtualReadID)){
+			currentRead.m_virtualID = virtualReadID;
+			currentRead.m_maxIndex = m_readsInfo.get_readLen(virtualReadID) - m_minOverlap;
+			currentRead.m_indexedReadOverlaps = std::vector<IntervalList>(currentRead.m_maxIndex + 1);
+			currentRead.m_nElementsInIndex = std::vector<numReads_t>(currentRead.m_maxIndex + 1, 0);
+
 			while (ss >> seqIndex >> terminalInterval.lower >> terminalInterval.upper) {
-				overlapInfo.readIndex = seqIndex;
-				overlapInfo.terminalInterval = terminalInterval;
-				container.push_back(overlapInfo);
+//				overlapInfo.readIndex = seqIndex;
+//				overlapInfo.terminalInterval = terminalInterval;
+				//container.push_back(overlapInfo);
 				//m_overlapReadCount++;
+				currentRead.m_indexedReadOverlaps[seqIndex].push_back(terminalInterval);
+				currentRead.m_nElementsInIndex[seqIndex]++;
+
+				if (currentRead.m_nElementsInIndex[seqIndex] == 1) {
+					currentRead.m_popIndexVector.push_back(seqIndex);
+				}
+
 			}
-			currentRead = CurrentRead(	virtualReadID,
-										container,
-										m_readsInfo.get_readLen(virtualReadID),
-										m_minOverlap);
+//			currentRead = CurrentRead(	virtualReadID,
+//										container,
+//										m_readsInfo.get_readLen(virtualReadID),
+//										m_minOverlap);
 		}
 
 
@@ -149,11 +161,16 @@ void ReadOperations::write_partially_filtered_edges(CurrentRead& currentRead) {
 
 	m_tempEdgeWriter<<currentRead.m_virtualID<<" ";
 
+
 	for (auto intervalElement = irreducibleIntervals.rbegin();
 			intervalElement!= irreducibleIntervals.rend(); intervalElement++) {
+
 		m_tempEdgeWriter<<intervalElement->readIndex<<" "
 				<< intervalElement->terminalInterval.lower<<" "
 				<< intervalElement->terminalInterval.upper<<" ";
+//		std::cout<<"printing: "<<intervalElement->readIndex<<" "
+//						<< intervalElement->terminalInterval.lower<<" "
+//						<< intervalElement->terminalInterval.upper<<" ";
 	}
 	m_tempEdgeWriter<<"\n";
 
