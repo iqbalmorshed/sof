@@ -42,8 +42,18 @@ protected:
 	const std::string& m_readsFileName;
 	std::ifstream m_tempEdgeReader;
 	std::ofstream m_tempEdgeWriter;
+	char m_buffer[BUFSIZ];
+	int m_charsCollectedInBuffer = 0;
+	int m_totalCharsInBuffer = 0;
+	int m_itemNoInLine = 0;
+	size_t m_item = 0;
+
+	bool m_isValidRead = 1;
 
 private:
+	//CurrentRead& m_currentRead;
+	void process_item(CurrentRead& currentRead,
+			OverlapInfo& overlapInfo);
 	void filter_using_read(	CurrentRead& currentRead,
 							numReads_t virtualID,
 							readLen_t positionCurrentRead);

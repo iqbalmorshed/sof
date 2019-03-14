@@ -33,61 +33,168 @@ ReadOperations::ReadOperations(	const ChunkInfo& chunkInfo,
 		m_tempEdgeWriter = std::ofstream(m_readsFileName + ".filtered-"+ std::to_string(m_chunkInfo.ID+1));
 	//m_tempEdgeWriter = std::ofstream("temp_edge_file.be");
 	//m_tempEdgeWriter = std::ofstream("container-"+(m_chunkInfo.ID+1));
+	std::cin.rdbuf(m_tempEdgeReader.rdbuf());
+
 }
 
+//get_read old version
+//bool ReadOperations::get_read(CurrentRead& currentRead) {
+//
+//
+//
+//	std::string strInput;
+//	getline(m_tempEdgeReader, strInput);
+//
+//	if(strInput!=""){
+//		std::stringstream ss;
+//		numReads_t virtualReadID;
+//		readLen_t seqIndex;
+//		TerminalInterval terminalInterval;
+//		OverlapInfo overlapInfo;
+//		std::vector<OverlapInfo> container;
+//
+//		ss << strInput;
+//		ss >> virtualReadID;
+//
+////		std::cout<<"inside get read: strInput "<<strInput<<"\n";
+//
+//		if(m_readsInfo.get_isValid(virtualReadID)){
+//			currentRead.m_virtualID = virtualReadID;
+//			currentRead.m_maxIndex = m_readsInfo.get_readLen(virtualReadID) - m_minOverlap;
+//			currentRead.m_indexedReadOverlaps = std::vector<IntervalList>(currentRead.m_maxIndex + 1);
+//			currentRead.m_nElementsInIndex = std::vector<numReads_t>(currentRead.m_maxIndex + 1, 0);
+//
+//			while (ss >> seqIndex >> terminalInterval.lower >> terminalInterval.upper) {
+////				overlapInfo.readIndex = seqIndex;
+////				overlapInfo.terminalInterval = terminalInterval;
+//				//container.push_back(overlapInfo);
+//				//m_overlapReadCount++;
+//				currentRead.m_indexedReadOverlaps[seqIndex].push_back(terminalInterval);
+//				currentRead.m_nElementsInIndex[seqIndex]++;
+//
+//				if (currentRead.m_nElementsInIndex[seqIndex] == 1) {
+//					currentRead.m_popIndexVector.push_back(seqIndex);
+//				}
+//
+//			}
+////			currentRead = CurrentRead(	virtualReadID,
+////										container,
+////										m_readsInfo.get_readLen(virtualReadID),
+////										m_minOverlap);
+//		}
+//
+//
+//		return true;
+//	}
+//
+//	return false;
+//
+//}
 bool ReadOperations::get_read(CurrentRead& currentRead) {
 
-
-
-	std::string strInput;
-	getline(m_tempEdgeReader, strInput);
-
-	if(strInput!=""){
-		std::stringstream ss;
-		numReads_t virtualReadID;
-		readLen_t seqIndex;
-		TerminalInterval terminalInterval;
+		//m_currentRead = currentRead;
+		bool newLineFound = 0;
 		OverlapInfo overlapInfo;
-		std::vector<OverlapInfo> container;
+		m_isValidRead = 1;
 
-		ss << strInput;
-		ss >> virtualReadID;
+		while(!newLineFound){
+//			std::cout<<"inside while : chars collected:"<<m_charsCollectedInBuffer<<
+//					" totalChars :"<<m_totalCharsInBuffer<<" newLineFound :"<<newLineFound<<'\n';
+			 for (int i = m_charsCollectedInBuffer; (i < m_totalCharsInBuffer) && !newLineFound; i++)
+			 {
 
-//		std::cout<<"inside get read: strInput "<<strInput<<"\n";
+				 //std::cout<<"buffer char in "<<i<<" :"<<m_buffer[i]<<'\n';
+				 switch (m_buffer[i])
+				 {
 
-		if(m_readsInfo.get_isValid(virtualReadID)){
-			currentRead.m_virtualID = virtualReadID;
-			currentRead.m_maxIndex = m_readsInfo.get_readLen(virtualReadID) - m_minOverlap;
-			currentRead.m_indexedReadOverlaps = std::vector<IntervalList>(currentRead.m_maxIndex + 1);
-			currentRead.m_nElementsInIndex = std::vector<numReads_t>(currentRead.m_maxIndex + 1, 0);
+					 case '\r':
+						 break;
+					 case '\n':
+						 m_item = 0;
+						 m_charsCollectedInBuffer = i+1;
+						 m_itemNoInLine = 0;
+						 newLineFound = 1;
+						 break;
+					 case ' ':
+						if(m_isValidRead){
+							//std::cout<<"in iteration i="<<i<<" :"<<"validity :"<<m_isValidRead<<'\n';
+							process_item(currentRead, overlapInfo);
+						}
+						m_item = 0;
+						m_itemNoInLine++;
+						break;
+					 case '0': case '1': case '2': case '3':
+					 case '4': case '5': case '6': case '7':
+					 case '8': case '9':
+						 m_item = 10*m_item + m_buffer[i] - '0';
+						 break;
+					 default:
+						 std::cerr << "Bad format\n";
+				 }
+			 }
+			 //std::cout<<"for loop passed"<<'\n';
+			 if(!newLineFound && std::cin){
+				 //std::cout<<"collecting from buffer : buffer size :"<<sizeof(m_buffer)<<"\n";
+				 std::cin.read(m_buffer, sizeof(m_buffer));
+				 m_totalCharsInBuffer = std::cin.gcount();
+				 //std::cout<<"total chars in buffer :"<<m_totalCharsInBuffer<<" total chars Collected"<<m_charsCollectedInBuffer<<"\n";
+				 m_charsCollectedInBuffer = 0;
 
-			while (ss >> seqIndex >> terminalInterval.lower >> terminalInterval.upper) {
-//				overlapInfo.readIndex = seqIndex;
-//				overlapInfo.terminalInterval = terminalInterval;
-				//container.push_back(overlapInfo);
-				//m_overlapReadCount++;
-				currentRead.m_indexedReadOverlaps[seqIndex].push_back(terminalInterval);
-				currentRead.m_nElementsInIndex[seqIndex]++;
+			 }
+			 else{
+				 //std::cout<<"in else statement\n";
 
-				if (currentRead.m_nElementsInIndex[seqIndex] == 1) {
-					currentRead.m_popIndexVector.push_back(seqIndex);
-				}
+				 break;
+			 }
+			 //std::cout<<"if-else passed"<<'\n';
+		 }
 
-			}
-//			currentRead = CurrentRead(	virtualReadID,
-//										container,
-//										m_readsInfo.get_readLen(virtualReadID),
-//										m_minOverlap);
-		}
+		return newLineFound;
 
 
-		return true;
-	}
-
-	return false;
 
 }
+void ReadOperations::process_item(	CurrentRead& currentRead,
+					OverlapInfo& overlapInfo){
 
+
+	if(!m_itemNoInLine){
+		currentRead.m_virtualID = m_item;
+
+		m_isValidRead = m_readsInfo.get_isValid(currentRead.m_virtualID);
+
+		if(m_isValidRead){
+			currentRead.m_maxIndex = m_readsInfo.get_readLen(currentRead.m_virtualID) - m_minOverlap;
+			currentRead.m_indexedReadOverlaps = std::vector<IntervalList>(currentRead.m_maxIndex + 1);
+			currentRead.m_nElementsInIndex = std::vector<numReads_t>(currentRead.m_maxIndex + 1, 0);
+		}
+		//std::cout<<"got read :"<<currentRead.m_virtualID<<"\n";
+	}
+	else{
+		//std::cout<<"got item "<<m_itemNoInLine<<" :"<<m_item<<"\n";
+		int newItemNo = (m_itemNoInLine-1)%3;
+		switch(newItemNo){
+
+			case 0:
+				overlapInfo.readIndex = m_item;
+				break;
+			case 1:
+				overlapInfo.terminalInterval.lower = m_item;
+				break;
+			case 2:
+				overlapInfo.terminalInterval.upper = m_item;
+				currentRead.m_indexedReadOverlaps[overlapInfo.readIndex].push_back(overlapInfo.terminalInterval);
+				currentRead.m_nElementsInIndex[overlapInfo.readIndex]++;
+
+				if (currentRead.m_nElementsInIndex[overlapInfo.readIndex] == 1) {
+					currentRead.m_popIndexVector.push_back(overlapInfo.readIndex);
+				}
+				break;
+			default:
+				std::cout<<"something wrong...\n";
+		}
+	}
+}
 void ReadOperations::filter_edges(CurrentRead& currentRead) {
 
 	while (currentRead.is_poppable_interval()) {
@@ -172,7 +279,7 @@ void ReadOperations::write_partially_filtered_edges(CurrentRead& currentRead) {
 //						<< intervalElement->terminalInterval.lower<<" "
 //						<< intervalElement->terminalInterval.upper<<" ";
 	}
-	m_tempEdgeWriter<<"\n";
+	m_tempEdgeWriter<<'\n';
 
 }
 void ReadOperations::write_completely_filtered_edges(CurrentRead& currentRead) {
