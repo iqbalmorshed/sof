@@ -330,4 +330,8 @@ void ReadOperations::write_completely_filtered_edges(CurrentRead& currentRead) {
 sof::ReadOperations::~ReadOperations() {
 	m_tempEdgeReader.close();
 	m_tempEdgeWriter.close();
+	if(m_chunkInfo.ID ){
+		std::string fileName = m_readsFileName + ".filtered-"+ std::to_string(m_chunkInfo.ID);
+		remove(fileName.c_str());
+	}
 }

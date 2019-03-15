@@ -37,7 +37,8 @@ public:
 	numReads_t read_overlaps_upto_limit(	std::ifstream& overlapReader,
 								std::vector<OverlapInfoVector>& container,
 								const ReadsInfo& readsInfo,
-								int maxContainerSize);
+								int maxContainerSize,
+								BufferInfo& bi);
 
 	BWTInterval get_overlaps(	const BWT* pBWT,
 								const std::string& sequence,
@@ -53,8 +54,17 @@ public:
 	}
 
 private:
+
 	int64_t m_overlapReadCount = 0;
 	int64_t m_overlapWriteCount = 0;
+	bool m_isValidRead = 0;
+	numReads_t m_sourceVertex;
+	numReads_t m_readCount;
+	void process_item(	std::vector<OverlapInfoVector>& container,
+						OverlapInfo& overlapInfo,
+						const ReadsInfo& readsInfo,
+						const numReads_t& item,
+						const int& itemNoInLine);
 
 };
 

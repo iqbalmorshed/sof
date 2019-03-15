@@ -72,6 +72,7 @@ isDone_t StringGraph::construct() {
 
 	RepeatRemoval repeatRemoval(readsInfo.get_numReads());
 
+	//exit(0);
 	FileWriter fileWriter;
 	fileWriter.write_asqg_file(m_inputData, readsInfo);
 

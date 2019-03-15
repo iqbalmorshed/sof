@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <vector>
+#include <cstdio>
 
 enum EdgeType{
 	BE_EDGE = 0,
@@ -44,6 +45,14 @@ struct ChunkInfo{
 	numReads_t end = -1;
 };
 
+struct BufferInfo{
+	char buffer[BUFSIZ];
+	int charsCollectedInBuffer = 0;
+	int totalCharsInBuffer = 0;
+	numReads_t item =0;
+	int itemNoInLine = 0;
+
+};
 using OverlapInfoVector = std::vector<OverlapInfo>;
 } /* namespace sof */
 

@@ -29,6 +29,8 @@ struct Read {
 	readLen_t seqLength;
 };
 
+
+
 enum ContainerType{
 	FORWARD_OVERLAPS,
 	REVERSE_OVERLAPS,
@@ -67,6 +69,7 @@ private:
 	const readLen_t m_minOverlap;
 	const bool m_bSetReadsInfo;
 	const int64_t m_maxContainerSize;
+	BufferInfo m_bi;
 
 
 	const bool m_bIsRepeatReadPresent = DEFAULT_REPEAT_PRESENCE;

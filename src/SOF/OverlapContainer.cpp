@@ -188,7 +188,7 @@ ChunkInfo OverlapContainer::readPartiallyFromFile(ChunkInfo prevChunkInfo) {
 	m_container.clear();
 	currChunkInfo.end = overlapOperations.read_overlaps_upto_limit(
 			m_overlapContainerReader,
-			m_container, m_readsInfo, m_maxContainerSize);
+			m_container, m_readsInfo, m_maxContainerSize, m_bi);
 
 
 	return currChunkInfo;
