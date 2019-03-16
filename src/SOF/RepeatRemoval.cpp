@@ -35,7 +35,7 @@ void RepeatRemoval::remove_repeat(const std::string& tempFileName) {
 	std::ofstream tempFileWriter("temp_file");
 
 	EdgeContainer edgeContainer(m_numReads);
-
+	//EdgeContainer edgeContainer;
 	while (inputFile) {
 		// read stuff from the file into a string and print it
 		std::string strInput;
