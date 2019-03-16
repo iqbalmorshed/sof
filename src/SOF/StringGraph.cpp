@@ -70,6 +70,7 @@ isDone_t StringGraph::construct() {
 
 	}
 
+	//exit(0);
 	RepeatRemoval repeatRemoval(readsInfo.get_numReads());
 
 	//exit(0);

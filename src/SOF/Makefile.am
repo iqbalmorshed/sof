@@ -13,6 +13,7 @@ libsof_a_CPPFLAGS = \
 	-I$(top_srcdir)/Scaffold \
 	-I$(top_srcdir)/GraphDiff \
 	-I$(top_srcdir)/Thirdparty \
+	-I$(top_srcdir)/sparsepp \
 	-I$(top_srcdir)/SGA
 
 libsof_a_SOURCES = \
