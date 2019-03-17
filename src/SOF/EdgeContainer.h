@@ -86,14 +86,20 @@ public:
 
 	void set_edge(numReads_t sourceVertexID,
 				numReads_t destinationVertexID,
-				readLen_t sourceIndex){
-
+				readLen_t overlapLength){
+//
 		if(sourceVertexID < destinationVertexID){
-			//m_edgeInfoMap[sourceVertexID][destinationVertexID]=sourceIndex;
 			m_edge.sourceVertex = sourceVertexID;
 			m_edge.destinationVertex = destinationVertexID;
-//			pii edge(sourceVertexID, destinationVertexID);
-			m_edgeInfoMap[m_edge] = sourceIndex;
+
+//			if(m_edgeInfoMap.find(m_edge)!= m_edgeInfoMap.end() ||
+//					m_edgeInfoMap[m_edge] < overlapLength){
+			m_edgeInfoMap[m_edge] = overlapLength;
+		}
+		else{
+			m_edge.sourceVertex = destinationVertexID;
+			m_edge.destinationVertex = sourceVertexID;
+			m_edgeInfoMap[m_edge] = overlapLength;
 		}
 
 	}
@@ -101,8 +107,16 @@ public:
 	bool is_present(numReads_t sourceVertexID,
 					numReads_t destinationVertexID,
 					readLen_t overlapLength){
-		if(sourceVertexID < destinationVertexID)
-			return false;
+		if(sourceVertexID < destinationVertexID){
+			m_edge.sourceVertex = sourceVertexID;
+			m_edge.destinationVertex = destinationVertexID;
+
+			if(m_edgeInfoMap.find(m_edge)!= m_edgeInfoMap.end())
+				return false;
+			else
+				return true;
+
+		}
 		else{
 //			return (m_edgeInfoMap[destinationVertexID].find(sourceVertexID) !=
 //				m_edgeInfoMap[destinationVertexID].end() &&
@@ -111,7 +125,7 @@ public:
 			m_edge.destinationVertex = sourceVertexID;
 //			pii edge(destinationVertexID, sourceVertexID);
 			return (m_edgeInfoMap.find(m_edge)!= m_edgeInfoMap.end() &&
-					m_edgeInfoMap[m_edge]==overlapLength);
+					m_edgeInfoMap[m_edge]>=overlapLength);
 		}
 	}
 
