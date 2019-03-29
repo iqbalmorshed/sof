@@ -204,12 +204,12 @@ numReads_t sof::OverlapOperations::read_overlaps_upto_limit(
 	OverlapInfo overlapInfo;
 
 
-
-	while(m_overlapReadCount < maxContainerSize){
+	bool newLineFound = 0;
+	while(m_overlapReadCount < maxContainerSize || !newLineFound){
 //			std::cout<<"inside while : chars collected:"<<bi.charsCollectedInBuffer<<
 //					" totalChars :"<<bi.totalCharsInBuffer<<'\n';
 		m_isValidRead = 1;
-		bool newLineFound = 0;
+		newLineFound = 0;
 		int i;
 		for (i = bi.charsCollectedInBuffer; (i < bi.totalCharsInBuffer) && !newLineFound; i++){
 
